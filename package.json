@@ -1,0 +1,35 @@
+{
+  "name": "architect-oracle-pool",
+  "version": "0.0.1",
+  "description": "architect oracle database connection pool",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "nodeunit test/*.test.js",
+    "integration-test": "nodeunit test/*.*test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/bimedia-fr/architect-pg-pool.git"
+  },
+  "author": "jerome creignou",
+  "license": "Apache License V2.0",
+  "contributors": [
+    {
+      "name":"julian clemot"
+    }, {
+      "name":"theo tatinclaux"
+    }
+  ],
+  "dependencies": {
+    "async": "^0.9.0",
+    "oracledb": "^1.13.1"
+  },
+  "plugin": {
+    "provides": [
+      "oracledb"
+    ]
+  },
+  "devDependencies": {
+    "nodeunit": "^0.9.1"
+  }
+}
