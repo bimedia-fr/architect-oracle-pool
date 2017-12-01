@@ -24,7 +24,7 @@ var URI = {
 
 function assertPool(pool, test) {
     test.ok(pool, 'pool is defined');
-    test.equal(typeof pool['_pool'], 'object', 'pool has a _pool object');
+    test.equal(typeof pool['_pool'], 'object', 'pool has a _pool object ' + Object.keys(pool));
 }
 module.exports = {
     testDefaultPool: function (test) {
@@ -64,24 +64,6 @@ module.exports = {
             assertPool(res.oradb.first, test);
             assertPool(res.oradb.second, test);
             test.ok(!res.oradb.connection, 'there is no *default* pool : *oracledb.connection* is not available');
-            test.done();
-        });
-    },
-    testMultiPoolWithDefault: function (test) {
-        oraclepool({
-            first: {
-                url: URI
-            },
-            second: {
-                url: URI,
-                "default": true
-            }
-        }, {}, function (err, res) {
-
-            test.ok(res.oradb, 'exports a *oracledb* object to architect');
-            assertPool(res.oradb.first, test);
-            assertPool(res.oradb.second, test);
-            assertPool(res.oradb, test);
             test.done();
         });
     }
