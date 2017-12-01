@@ -6,7 +6,7 @@ var oracledb = require('oracledb'),
 module.exports = function setup(options, imports, register) {
 
     // Create the pools
-    oracledb.createPools(oracledb, options)
+    orapool(oracledb).createPools(options)
     .then(function(pools) {
         register(null, pools);
     }).catch(register);

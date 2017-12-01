@@ -10,8 +10,6 @@ function deferred(fn) {
     return str;
 }
 
-var api = {};
-
 function Pool(orapool){
     this._pool = orapool;
 }
@@ -55,57 +53,59 @@ Pool.prototype.queryStream = function (sql, binding, options) {
     });
 };
 
-/**
- * Return a single db pool instance
- * @param  {Object} config
- * @return {Promise}
- */
-api.createPool = function(config) {
-    return oracledb.createPool(config)
-    .then(function(pool) {
-        return new Pool(pool);
-    });
-};
-
-/**
- * Return all the db pools defined in options
- * @param {Object} options
- * @return {Promise}
- */
-api.createPools = function(oracledb, options) {
-    var promises = [];
-    var pools = [];
-    var res = {
-        oradb: {},
-        onDestroy: function () {
-            pools.forEach(function (p) {
-                p.close();
-            });
-        }
-    };
-    if (options.url) {
-        var promise = api.createPool(options.url)
-        .then(function(db) {
-            res.oradb = db;
-            pools.push(res.oradb._pool);
+module.exports = function(oracledb) {
+    var api = {};
+    
+    /**
+     * Return a single db pool instance
+     * @param  {Object} config
+     * @return {Promise}
+     */
+    api.createPool = function(config) {
+        return oracledb.createPool(config)
+        .then(function(pool) {
+            return new Pool(pool);
         });
-        promises.push(promise);
-    }
-    Object.keys(options).forEach(function (key) {
-        if (options[key] && options[key].url) {
-            var promise = api.createPool(options[key].url)
+    };
+    
+    /**
+     * Return all the db pools defined in options
+     * @param {Object} options
+     * @return {Promise}
+     */
+    api.createPools = function(options) {
+        var promises = [];
+        var pools = [];
+        var res = {
+            oradb: {},
+            onDestroy: function () {
+                pools.forEach(function (p) {
+                    p.close();
+                });
+            }
+        };
+        if (options.url) {
+            var promise = api.createPool(options.url)
             .then(function(db) {
-                res.oradb[key] = db;
-                pools.push(res.oradb[key]._pool);
+                res.oradb = db;
+                pools.push(res.oradb._pool);
             });
             promises.push(promise);
         }
-    });
-
-    return Promise.all(promises)
-    .then(function(dbs) {
-        return res;
-    });
+        Object.keys(options).forEach(function (key) {
+            if (options[key] && options[key].url) {
+                var promise = api.createPool(options[key].url)
+                .then(function(db) {
+                    res.oradb[key] = db;
+                    pools.push(res.oradb[key]._pool);
+                });
+                promises.push(promise);
+            }
+        });
+    
+        return Promise.all(promises)
+        .then(function(dbs) {
+            return res;
+        });
+    };
 };
-
-module.exports = api;
