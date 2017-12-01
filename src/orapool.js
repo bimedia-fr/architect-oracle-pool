@@ -76,28 +76,22 @@ module.exports = function(oracledb) {
     api.createPools = function(options) {
         var promises = [];
         var pools = [];
-        var res = {
-            oradb: {},
-            onDestroy: function () {
-                pools.forEach(function (p) {
-                    p.close();
-                });
-            }
-        };
         if (options.url) {
             var promise = api.createPool(options.url)
             .then(function(db) {
-                res.oradb = db;
-                pools.push(res.oradb._pool);
+                pools.push(db._pool);
+                return db;
             });
             promises.push(promise);
         }
-        Object.keys(options).forEach(function (key) {
-            if (options[key] && options[key].url) {
+        Object.keys(options).forEach((key) => {
+            if (key != 'url' && options[key] && options[key].url) {
                 var promise = api.createPool(options[key].url)
                 .then(function(db) {
-                    res.oradb[key] = db;
-                    pools.push(res.oradb[key]._pool);
+                    pools.push(db._pool);
+                    var res = {};
+                    res[key] = db;
+                    return res;
                 });
                 promises.push(promise);
             }
@@ -105,7 +99,14 @@ module.exports = function(oracledb) {
     
         return Promise.all(promises)
         .then(function(dbs) {
-            return res;
+            return {
+                oradb: Object.assign.apply(null, dbs),
+                onDestroy: function () {
+                    pools.forEach(function (p) {
+                        p.close();
+                    });
+                }
+            }
         });
     };
 
