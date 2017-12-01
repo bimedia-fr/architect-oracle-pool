@@ -31,8 +31,8 @@ module.exports = {
         oraclepool({
             url: URI
         }, {}, function (err, res) {
-            test.ok(res.oradb,, 'exports a *oracledb* object to architect');
-            assertPool(res.oradb,, test);
+            test.ok(res.oradb, 'exports a *oracledb* object to architect');
+            assertPool(res.oradb, test);
             test.done();
         });
     },
