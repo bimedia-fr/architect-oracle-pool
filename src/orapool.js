@@ -108,4 +108,6 @@ module.exports = function(oracledb) {
             return res;
         });
     };
+
+    return api;
 };
