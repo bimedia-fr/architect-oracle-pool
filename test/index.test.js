@@ -31,8 +31,8 @@ module.exports = {
         oraclepool({
             url: URI
         }, {}, function (err, res) {
-            test.ok(res.oracledb, 'exports a *oracledb* object to architect');
-            assertPool(res.oracledb, test);
+            test.ok(res.oradb,, 'exports a *oracledb* object to architect');
+            assertPool(res.oradb,, test);
             test.done();
         });
     },
@@ -44,7 +44,7 @@ module.exports = {
                 "url": "ssssssssssssssssss/XE"
             }
         }, {}, function (err, res) {
-            res.oracledb._pool.getConnection(function (err) {
+            res.oradb._pool.getConnection(function (err) {
                 test.ok(err, 'could not resolve the connect identifier specified');
                 test.done();
             });
@@ -60,10 +60,10 @@ module.exports = {
             }
         }, {}, function (err, res) {
 
-            test.ok(res.oracledb, 'exports a *oracledb* object to architect');
-            assertPool(res.oracledb.first, test);
-            assertPool(res.oracledb.second, test);
-            test.ok(!res.oracledb.connection, 'there is no *default* pool : *oracledb.connection* is not available');
+            test.ok(res.oradb, 'exports a *oracledb* object to architect');
+            assertPool(res.oradb.first, test);
+            assertPool(res.oradb.second, test);
+            test.ok(!res.oradb.connection, 'there is no *default* pool : *oracledb.connection* is not available');
             test.done();
         });
     },
@@ -78,10 +78,10 @@ module.exports = {
             }
         }, {}, function (err, res) {
 
-            test.ok(res.oracledb, 'exports a *oracledb* object to architect');
-            assertPool(res.oracledb.first, test);
-            assertPool(res.oracledb.second, test);
-            assertPool(res.oracledb, test);
+            test.ok(res.oradb, 'exports a *oracledb* object to architect');
+            assertPool(res.oradb.first, test);
+            assertPool(res.oradb.second, test);
+            assertPool(res.oradb, test);
             test.done();
         });
     }
