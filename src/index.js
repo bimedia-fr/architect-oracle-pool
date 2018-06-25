@@ -10,7 +10,7 @@ module.exports = function setup(options, imports, register) {
     // Create the pools
     orapool(oracledb).createPools(options)
     .then(function(pools) {
-        register(null, pools);
+        register(null, {oradb:pools});
     }).catch(register);
 };
 
