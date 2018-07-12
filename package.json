@@ -1,6 +1,6 @@
 {
   "name": "architect-oracle-pool",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "architect oracle database connection pool",
   "main": "src/index.js",
   "scripts": {
@@ -15,9 +15,10 @@
   "license": "Apache License V2.0",
   "contributors": [
     {
-      "name":"julian clemot"
-    }, {
-      "name":"theo tatinclaux"
+      "name": "julian clemot"
+    },
+    {
+      "name": "theo tatinclaux"
     }
   ],
   "dependencies": {
