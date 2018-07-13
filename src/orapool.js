@@ -10,20 +10,18 @@ function deferred(fn) {
     return str;
 }
 
-function Pool(orapool){
+function Pool(orapool, config){
     this._pool = orapool;
+    this._config = config;
 }
 
-Pool.prototype.getConnection = function () {
-    return this._pool.getConnection.apply(this._pool, arguments);
-};
-
 Pool.prototype.query = function (sql, binding, options) {
-    return this.getConnection().then(conn => {
-        var p = config.schema ? connection.execute('ALTER SESSION SET CURRENT_SCHEMA = ' + config.schema) : Promise.resolve();
+    return this._pool.getConnection().then(conn => {
+        var p = this._config.schema ? conn.execute('ALTER SESSION SET CURRENT_SCHEMA = ' + this._config.schema) : Promise.resolve();
         return p.then(() => {
-            return connection.execute(sql, binding, options).then((rows) => {
-                conn.close();
+            return conn.execute(sql, binding, options).then((rows) => {
+                conn.release();
+                console.log("res", rows);
                 return rows;
             });
         }).catch(err => {
@@ -37,14 +35,14 @@ Pool.prototype.queryStream = function (sql, binding, options) {
     var args = arguments;
     var self = this;
     return deferred(function(str) {
-        return self.getConnection().then((conn) => {
-            var p = config.schema ? connection.execute('ALTER SESSION SET CURRENT_SCHEMA = ' + config.schema) : Promise.resolve();
+        return this._pool.getConnection().then((conn) => {
+            var p = this._config.schema ? conn.execute('ALTER SESSION SET CURRENT_SCHEMA = ' + this._config.schema) : Promise.resolve();
             p.then(() => {
-                var stream = connection.queryStream.apply(connection, args);
+                var stream = conn.queryStream.apply(conn, args);
                 closeConnection(stream);
                 stream.pipe(str);
             }).catch(err => {
-                conn.close();
+                conn.release();
                 return Promise.reject(err);
             });
         }).catch((err) => {
@@ -64,7 +62,7 @@ module.exports = function(oracledb) {
     api.createPool = function(config) {
         return oracledb.createPool(config)
         .then(function(pool) {
-            return new Pool(pool);
+            return new Pool(pool, config);
         });
     };
     
