@@ -21,11 +21,10 @@ Pool.prototype.query = function (sql, binding, options) {
         return p.then(() => {
             return conn.execute(sql, binding, options).then((rows) => {
                 conn.release();
-                console.log("res", rows);
                 return rows;
             });
         }).catch(err => {
-            conn.close();
+            conn.release();
             return Promise.reject(err);
         });
     });
