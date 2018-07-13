@@ -19,7 +19,6 @@ Pool.prototype.query = function (sql, binding, options) {
     return this._pool.getConnection().then(conn => {
         var p = this._config.schema ? conn.execute('ALTER SESSION SET CURRENT_SCHEMA = ' + this._config.schema) : Promise.resolve();
         return p.then(() => {
-            sql = "SELECT G.NUM_0, G.TYP_0, G.ACCDAT_0, BPR_0, AMTCUR_0 FROM GACCENTRY G INNER JOIN GACCENTRYD GYD ON G.NUM_0 = GYD.NUM_0 WHERE SAC_0 = 'C7' AND GYD.SNS_0 = '-1' AND G.ACCDAT_0 >= TRUNC(sysdate - 1)";
             return conn.execute(sql, binding, options).then((rows) => {
                 conn.release();
                 console.log("res", rows);
