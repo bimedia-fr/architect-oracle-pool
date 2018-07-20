@@ -1,6 +1,6 @@
 {
   "name": "architect-oracle-pool",
-  "version": "0.0.3",
+  "version": "1.0.0",
   "description": "architect oracle database connection pool",
   "main": "src/index.js",
   "scripts": {
