@@ -20,7 +20,7 @@
   ],
   "dependencies": {
     "async": "^0.9.0",
-    "oracledb": "^1.13.1"
+    "oracledb": "^4.2.0"
   },
   "devDependencies": {
     "nodeunit": "^0.9.1"
