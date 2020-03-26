@@ -4,7 +4,7 @@
   "description": "architect oracle database connection pool",
   "main": "src/index.js",
   "scripts": {
-    "test": "nodeunit test/*.test.js",
+    "test": "mocha test/*.test.js",
     "integration-test": "nodeunit test/*.*test.js"
   },
   "repository": {
@@ -23,6 +23,6 @@
     "oracledb": "^4.2.0"
   },
   "devDependencies": {
-    "nodeunit": "^0.9.1"
+    "mocha": "^7.1.1"
   }
 }

@@ -12,9 +12,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-"use strict";
-
-var oraclepool = require('../src/index');
+const assert = require('assert');
+const oraclepool = require('../src/index');
 
 var URI = {
     "user": "PREPROD3",
@@ -26,45 +25,53 @@ function assertPool(pool, test) {
     test.ok(pool, 'pool is defined');
     test.equal(typeof pool['_pool'], 'object', 'pool has a _pool object ' + Object.keys(pool));
 }
-module.exports = {
-    testDefaultPool: function (test) {
-        oraclepool({
-            url: URI
-        }, {}, function (err, res) {
-            test.ok(res.oradb, 'exports a *oracledb* object to architect');
-            assertPool(res.oradb, test);
-            test.done();
-        });
-    },
-    testInvalidUrlPool: function (test) {
-        oraclepool({
-            url: {
-                "user": "PREPROD3",
-                "password": "oracle",
-                "url": "ssssssssssssssssss/XE"
-            }
-        }, {}, function (err, res) {
-            res.oradb._pool.getConnection(function (err) {
-                test.ok(err, 'could not resolve the connect identifier specified');
-                test.done();
+
+describe('oraclepool', () => {
+    describe('testDefaultPool', ()=> {
+        it('exports a *oracledb* object to architect', (done) => {
+            oraclepool({
+                url: URI
+            }, {}, function (err, res) {
+                assert.ifError(err);
+                assert.ok(res.oradb, 'exports a *oracledb* object to architect');
+                assertPool(res.oradb, assert);
+                done();
             });
         });
-    },
-    testMultiPool: function (test) {
-        oraclepool({
-            first: {
-                url: URI
-            },
-            second: {
-                url: URI
-            }
-        }, {}, function (err, res) {
-
-            test.ok(res.oradb, 'exports a *oracledb* object to architect');
-            assertPool(res.oradb.first, test);
-            assertPool(res.oradb.second, test);
-            test.ok(!res.oradb.connection, 'there is no *default* pool : *oracledb.connection* is not available');
-            test.done();
+    });
+    describe('testInvalidUrlPool', () => {
+        it('should throw error on invalid url', (done) => {
+            oraclepool({
+                url: {
+                    "user": "PREPROD3",
+                    "password": "oracle",
+                    "url": "ssssssssssssssssss/XE"
+                }
+            }, {}, function (err, res) {
+                res.oradb._pool.getConnection(function (err) {
+                    assert.ok(err, 'could not resolve the connect identifier specified');
+                    done();
+                });
+            });
         });
-    }
-};
+    });
+    describe('testMultiPool', () => {
+        it('should handle multiple pool config', (done) => {
+            oraclepool({
+                first: {
+                    url: URI
+                },
+                second: {
+                    url: URI
+                }
+            }, {}, function (err, res) {
+                assert.ifError(err);
+                assert.ok(res.oradb, 'exports a *oracledb* object to architect');
+                assertPool(res.oradb.first, assert);
+                assertPool(res.oradb.second, assert);
+                assert.ok(!res.oradb.connection, 'there is no *default* pool : *oracledb.connection* is not available');
+                done();
+            });
+        });
+    });
+});
