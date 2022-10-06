@@ -1,9 +1,7 @@
-'use strict';
-
-var PassThrough = require('stream').PassThrough;
+const PassThrough = require('stream').PassThrough;
 
 function deferred(fn) {
-    var str = new PassThrough({
+    const str = new PassThrough({
         objectMode: true
     });
     fn(str);
@@ -17,12 +15,9 @@ function Pool(orapool, config){
 
 Pool.prototype.query = function (sql, binding, options) {
     return this._pool.getConnection().then(conn => {
-        var p = this._config.schema ? conn.execute('ALTER SESSION SET CURRENT_SCHEMA = ' + this._config.schema) : Promise.resolve();
-        return p.then(() => {
-            return conn.execute(sql, binding, options).then((rows) => {
-                conn.release();
-                return rows;
-            });
+        return conn.execute(sql, binding, options).then((rows) => {
+            conn.release();
+            return rows;
         }).catch(err => {
             conn.release();
             return Promise.reject(err);
@@ -30,20 +25,20 @@ Pool.prototype.query = function (sql, binding, options) {
     });
 };
 
-Pool.prototype.queryStream = function (sql, binding, options) {
+Pool.prototype.queryStream = function (/* sql, binding, options */) {
     var args = arguments;
-    var self = this;
     return deferred(function(str) {
         return this._pool.getConnection().then((conn) => {
-            var p = this._config.schema ? conn.execute('ALTER SESSION SET CURRENT_SCHEMA = ' + this._config.schema) : Promise.resolve();
-            p.then(() => {
-                var stream = conn.queryStream.apply(conn, args);
-                closeConnection(stream);
-                stream.pipe(str);
-            }).catch(err => {
+            let stream = conn.queryStream.apply(conn, args);
+            stream.once('error', (err) => {
                 conn.release();
-                return Promise.reject(err);
+                str.emit(err);
+            })
+            stream.once('end', () => {
+                // console.log("stream 'end' event"); // all data has been fetched
+                stream.destroy();                     // clean up resources being used
             });
+            stream.pipe(str);
         }).catch((err) => {
             str.emit('error', err);
         });
