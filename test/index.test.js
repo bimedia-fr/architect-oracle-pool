@@ -18,7 +18,7 @@ const oraclepool = require('../src/index');
 var URI = {
     "user": "PREPROD3",
     "password": "oracle",
-    "url": "bimedia-possm.lan/XE"
+    "connectString": "bimedia-possm.lan/XE"
 };
 
 function assertPool(pool, test) {
@@ -45,7 +45,7 @@ describe('oraclepool', () => {
                 url: {
                     "user": "PREPROD3",
                     "password": "oracle",
-                    "url": "ssssssssssssssssss/XE"
+                    "connectString": "ssssssssssssssssss/XE"
                 }
             }, {}, function (err, res) {
                 res.oradb._pool.getConnection(function (err) {
