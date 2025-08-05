@@ -16,9 +16,9 @@ const assert = require('assert');
 const oraclepool = require('../src/index');
 
 var URI = {
-    "user": "PREPROD3",
-    "password": "oracle",
-    "connectString": "bimedia-possm.lan/XE"
+    user: 'PREPROD3',
+    password: 'oracle',
+    connectString: 'bimedia-possm.lan/XE'
 };
 
 function assertPool(pool, test) {
@@ -27,14 +27,42 @@ function assertPool(pool, test) {
 }
 
 describe('oraclepool', () => {
-    describe('testDefaultPool', ()=> {
+    describe('unvalid config', ()=> {
+        it('should throw', (done) => {
+            oraclepool({
+                badProperty: {
+                    poolname: URI
+                }
+            }, {}, function (err, res) {
+                assert.ok(res === null);
+                assert.ok(err instanceof Error);
+                done();
+            });
+        });
+    });
+    describe('unvalid config 2', ()=> {
+        it('should throw', (done) => {
+            oraclepool({
+                pools: {
+                    poolname: null
+                }
+            }, {}, function (err, res) {
+                assert.ok(res === null);
+                assert.ok(err instanceof Error);
+                done();
+            });
+        });
+    });
+    describe('testOnePool', ()=> {
         it('exports a *oracledb* object to architect', (done) => {
             oraclepool({
-                url: URI
+                pools: {
+                    poolname: URI
+                }
             }, {}, function (err, res) {
                 assert.ifError(err);
                 assert.ok(res.oradb, 'exports a *oracledb* object to architect');
-                assertPool(res.oradb, assert);
+                assertPool(res.oradb.poolname, assert);
                 done();
             });
         });
@@ -42,13 +70,15 @@ describe('oraclepool', () => {
     describe('testInvalidUrlPool', () => {
         it('should throw error on invalid url', (done) => {
             oraclepool({
-                url: {
-                    "user": "PREPROD3",
-                    "password": "oracle",
-                    "connectString": "ssssssssssssssssss/XE"
+                pools: {
+                    poolname: {
+                        "user": "PREPROD3",
+                        "password": "oracle",
+                        "connectString": "ssssssssssssssssss/XE"
+                    }
                 }
             }, {}, function (err, res) {
-                res.oradb._pool.getConnection(function (err) {
+                res.oradb.poolname._pool.getConnection(function (err) {
                     assert.ok(err, 'could not resolve the connect identifier specified');
                     done();
                 });
@@ -58,18 +88,16 @@ describe('oraclepool', () => {
     describe('testMultiPool', () => {
         it('should handle multiple pool config', (done) => {
             oraclepool({
-                first: {
-                    url: URI
-                },
-                second: {
-                    url: URI
+                pools: {
+                    poolname: URI,
+                    poolname2: URI
                 }
             }, {}, function (err, res) {
                 assert.ifError(err);
                 assert.ok(res.oradb, 'exports a *oracledb* object to architect');
-                assertPool(res.oradb.first, assert);
-                assertPool(res.oradb.second, assert);
-                assert.ok(!res.oradb.connection, 'there is no *default* pool : *oracledb.connection* is not available');
+                assertPool(res.oradb.poolname, assert);
+                assertPool(res.oradb.poolname2, assert);
+                assert.ok(!res.oradb.poolname.connection, 'there is no *default* pool : *oracledb.connection* is not available');
                 done();
             });
         });

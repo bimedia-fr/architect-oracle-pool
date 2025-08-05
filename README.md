@@ -13,11 +13,13 @@ npm install --save architect-oracle-pool
 ```js
 module.exports = [{
     packagePath: "architect-oracle-pool",
-    url: {
-        user: 'scott',
-        password: 'tiger',
-        connectString: 'backend.local/X3PV7',
-        poolMax: 10
+    pools: {
+        poolName: {
+            user: 'scott',
+            password: 'tiger',
+            connectString: 'backend.local/X3PV7',
+            poolMax: 10
+        }
     }
 }];
 ```
@@ -48,11 +50,13 @@ Configure Architect with `config.js` :
 ```js
 module.exports = [{
     packagePath: "architect-oracle-pool",
-    url: {
-        user: 'scott',
-        password: 'tiger',
-        connectString: 'backend.local/PV7',
-        poolMax: 10
+    pools: {
+        poolName: {
+            user: 'scott',
+            password: 'tiger',
+            connectString: 'backend.local/PV7',
+            poolMax: 10
+        }
     }
 }, './routes'];
 ```
@@ -96,16 +100,14 @@ Here is how to define 2 different pools :
 ```js
 module.exports = [{
     packagePath: "architect-oracle-pool",
-    first : {
-    	url: {
+    pools: {
+        first: {
             user: 'scott',
             password: 'tiger',
-            connectString: 'backend1.local/PV7',
+            connectString: 'backend.local/PV7',
             poolMax: 10
-        }
-    },
-	second : {
-    	url: {
+        },
+        second : {
             user: 'scott',
             password: 'tiger',
             connectString: 'backend2.local/PV7',
