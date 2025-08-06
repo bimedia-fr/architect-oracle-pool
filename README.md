@@ -23,7 +23,8 @@ module.exports = [{
     }
 }];
 ```
-* `url` :  Defines the oracle url to use for connection
+* `pools` :  Defines the oracle pools configs
+* `pools.poolName` :  Defines a oracle pool config to connect a particular database service
 
 
 ### Usage
@@ -130,14 +131,12 @@ module.exports = function setup(options, imports, register) {
 
 ### Configuration
 
-* `url` either a connection url or an object :
- * `host` : serveur hostname or ip
- * `port` : serveur port
+ * `pools`: object with individuals pool config object for pool names
+ * `pools.poolName`: pool config object for an individual pool
+ * `pools.poolName.host` : serveur hostname or ip
+ * `connectString` : the oracle database oracle net services connection string
  * `user` : username to login,
- * `password` : password to login,
- * `database`: database name,
- * `application_name`: a name to identify client,
- * `validationQuery`: a query to run to validate a connection
+ * `password` : password to login
  
 See Oracle [createPool](https://github.com/oracle/node-oracledb/blob/master/doc/api.md#createpool)
 
