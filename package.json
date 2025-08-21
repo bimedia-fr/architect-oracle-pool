@@ -1,10 +1,13 @@
 {
   "name": "architect-oracle-pool",
-  "version": "2.0.0",
+  "version": "3.0.0-0",
   "description": "architect oracle database connection pool",
   "main": "src/index.js",
+  "types": "types/index.d.ts",
   "scripts": {
-    "test": "mocha test/*.test.js"
+    "test": "nyc --reporter=lcov --reporter=text mocha --recursive test --timeout 20000",
+    "types": "tsc",
+    "lint": "eslint src test --fix"
   },
   "repository": {
     "type": "git",
@@ -12,16 +15,22 @@
   },
   "author": "jerome creignou",
   "license": "Apache License V2.0",
+  "engines": {
+    "node": ">=16.20.0"
+  },
   "contributors": [
     {
       "name": "julian Fouquet"
     }
   ],
   "dependencies": {
-    "oracledb": "^5.5.0"
+    "oracledb": "^6.9.0"
   },
   "devDependencies": {
+    "@types/node": "^24.1.0",
     "eslint": "^8.24.0",
-    "mocha": "^10.0.0"
+    "mocha": "^10.8.2",
+    "nyc": "^15.1.0",
+    "typescript": "^5.9.2"
   }
 }

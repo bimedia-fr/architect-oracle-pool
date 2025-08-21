@@ -13,15 +13,18 @@ npm install --save architect-oracle-pool
 ```js
 module.exports = [{
     packagePath: "architect-oracle-pool",
-    url: {
-        user: 'scott',
-        password: 'tiger',
-        connectString: 'backend.local/X3PV7',
-        poolMax: 10
+    pools: {
+        poolName: {
+            user: 'scott',
+            password: 'tiger',
+            connectString: 'backend.local/X3PV7',
+            poolMax: 10
+        }
     }
 }];
 ```
-* `url` :  Defines the oracle url to use for connection
+* `pools` :  Defines the oracle pools configs
+* `pools.poolName` :  Defines a oracle pool config to connect a particular database service
 
 
 ### Usage
@@ -48,11 +51,13 @@ Configure Architect with `config.js` :
 ```js
 module.exports = [{
     packagePath: "architect-oracle-pool",
-    url: {
-        user: 'scott',
-        password: 'tiger',
-        connectString: 'backend.local/PV7',
-        poolMax: 10
+    pools: {
+        poolName: {
+            user: 'scott',
+            password: 'tiger',
+            connectString: 'backend.local/PV7',
+            poolMax: 10
+        }
     }
 }, './routes'];
 ```
@@ -96,16 +101,14 @@ Here is how to define 2 different pools :
 ```js
 module.exports = [{
     packagePath: "architect-oracle-pool",
-    first : {
-    	url: {
+    pools: {
+        first: {
             user: 'scott',
             password: 'tiger',
-            connectString: 'backend1.local/PV7',
+            connectString: 'backend.local/PV7',
             poolMax: 10
-        }
-    },
-	second : {
-    	url: {
+        },
+        second : {
             user: 'scott',
             password: 'tiger',
             connectString: 'backend2.local/PV7',
@@ -128,14 +131,12 @@ module.exports = function setup(options, imports, register) {
 
 ### Configuration
 
-* `url` either a connection url or an object :
- * `host` : serveur hostname or ip
- * `port` : serveur port
+ * `pools`: object with individuals pool config object for pool names
+ * `pools.poolName`: pool config object for an individual pool
+ * `pools.poolName.host` : serveur hostname or ip
+ * `connectString` : the oracle database oracle net services connection string
  * `user` : username to login,
- * `password` : password to login,
- * `database`: database name,
- * `application_name`: a name to identify client,
- * `validationQuery`: a query to run to validate a connection
+ * `password` : password to login
  
 See Oracle [createPool](https://github.com/oracle/node-oracledb/blob/master/doc/api.md#createpool)
 
