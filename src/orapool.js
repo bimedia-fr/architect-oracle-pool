@@ -1,5 +1,3 @@
-const PassThrough = require('stream').PassThrough;
-
 /**
  * @typedef {Object} PoolConfig
  * @property {string} user
@@ -13,7 +11,7 @@ const PassThrough = require('stream').PassThrough;
 /**
  * @typedef {Object} PoolInstance
  * @property {function(string, any, any): Promise<any>} query
- * @property {function(...any): PassThrough} queryStream
+ * @property {function(...any): import('stream').Readable} queryStream
  * @property {Object} _pool
  * @property {PoolConfig} _config
  */
@@ -23,19 +21,6 @@ const PassThrough = require('stream').PassThrough;
  * @property {function(PoolConfig): Promise<PoolInstance>} createPool
  * @property {function(Object): Promise<{ oradb: Object, onDestroy: function():void }>} createPools
  */
-
-/**
- * Create a deferred stream
- * @param {function(PassThrough):void} fn
- * @returns {PassThrough}
- */
-function deferred(fn) {
-    const str = new PassThrough({
-        objectMode: true
-    });
-    fn(str);
-    return str;
-}
 
 /**
  * Oracle Pool wrapper
@@ -62,12 +47,12 @@ function Pool(orapool, config){
  * @returns {Promise<any>}
  */
 Pool.prototype.query = function (sql, binding, options) {
-    return this._pool.getConnection().then(conn => {
-        return conn.execute(sql, binding, options).then((rows) => {
-            conn.release();
+    return this._pool.getConnection().then(cnx => {
+        return cnx.execute(sql, binding, options).then((rows) => {
+            cnx.close();
             return rows;
         }).catch(err => {
-            conn.release();
+            cnx.close();
             return Promise.reject(err);
         });
     });
@@ -75,26 +60,25 @@ Pool.prototype.query = function (sql, binding, options) {
 
 /**
  * Execute a SQL query and return a stream
- * @returns {PassThrough}
+ * @param {string} sql
+ * @param {any} binding
+ * @param {object} options
+ * @returns {Promise<import('stream').Readable>}
  */
-Pool.prototype.queryStream = function (/* sql, binding, options */) {
-    var args = arguments;
-    return deferred((str) => {
-        return this._pool.getConnection().then((conn) => {
-            let stream = conn.queryStream.apply(conn, args);
-            stream.once('error', (err) => {
-                conn.release();
-                str.emit(err);
-            })
-            stream.once('end', () => {
-                // console.log("stream 'end' event"); // all data has been fetched
-                stream.destroy();                     // clean up resources being used
+Pool.prototype.queryStream = async function (sql, binding, options) {
+    return this._pool.getConnection()
+        .then((cnx) => {
+            let stream = cnx.queryStream(sql, binding, options);
+            stream.on('end', () => {
+                stream.destroy(); 
             });
-            stream.pipe(str);
-        }).catch((err) => {
-            str.emit('error', err);
+            // pass here in all cases err etc ...
+            stream.on('close', async () => {
+                await cnx.close();
+            });
+            stream.on('error', () => {});
+            return stream;
         });
-    });
 };
 
 /**
@@ -153,7 +137,7 @@ module.exports = function(oracledb) {
                     oradb: objDb,
                     onDestroy: function () {
                         pools.forEach(function (p) {
-                            p.close();
+                            p.close(options.poolsDrainTime || 10);
                         });
                     }
                 }

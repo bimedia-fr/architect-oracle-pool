@@ -132,11 +132,11 @@ module.exports = function setup(options, imports, register) {
 ### Configuration
 
  * `pools`: object with individuals pool config object for pool names
+ * `poolsDrainTime`: see drainTime options. Default 10 s. https://node-oracledb.readthedocs.io/en/latest/api_manual/pool.html#pool.close
  * `pools.poolName`: pool config object for an individual pool
- * `pools.poolName.host` : serveur hostname or ip
- * `connectString` : the oracle database oracle net services connection string
- * `user` : username to login,
- * `password` : password to login
+ * `pools.poolName.connectString` : the oracle database oracle net services connection string
+ * `pools.poolName.user` : username to login,
+ * `pools.poolName.password` : password to login
  
 See Oracle [createPool](https://github.com/oracle/node-oracledb/blob/master/doc/api.md#createpool)
 

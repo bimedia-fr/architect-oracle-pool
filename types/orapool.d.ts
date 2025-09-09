@@ -13,7 +13,7 @@ type PoolConfig = {
 };
 type PoolInstance = {
     query: (arg0: string, arg1: any, arg2: any) => Promise<any>;
-    queryStream: (...args: any[]) => PassThrough;
+    queryStream: (...args: any[]) => import("stream").Readable;
     _pool: any;
     _config: PoolConfig;
 };
@@ -24,6 +24,4 @@ type OraclePoolApi = {
         onDestroy: () => void;
     }>;
 };
-import PassThrough_1 = require("stream");
-import PassThrough = PassThrough_1.PassThrough;
 //# sourceMappingURL=orapool.d.ts.map
